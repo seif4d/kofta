@@ -277,7 +277,7 @@
             <!-- 1. الرئيسية -->
             <main id="home-view" class="view active">
                 <div class="hero">
-                    <img src="https://images.unsplash.com/photo-1603360946369-dc9bb6258143?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="عرض خاص" loading="eager">
+                    <img src="https://raw.githubusercontent.com/seif4d/kofta/refs/heads/main/assets/img/logo.jpg" alt="عرض خاص" loading="eager">
                     <div class="hero-overlay">
                         <span class="tag"><i class="fas fa-star" style="margin-left:4px;"></i> دلع كرشك واللمة</span>
                         <h2 class="hero-title">صينية الملوك<br>تكفي وتوفي</h2>
@@ -405,7 +405,7 @@
                 { id: 't2', name: "صينية العتاولة", price: 400, desc: "4 لقمة + 300 جرام بطاطس + تومية ومخلل كبير + نص فراخ + 2 حواوشي + 4 صوابع كفتة.", img: TEMP_IMG },
                 { id: 't3', name: "صينية الوحش", price: 280, desc: "4 لقمة + نص كيلو أرز + 4 سلطة كبيرة + طحينة + 2 سيخ شيش + 2 حواوشي + 4 صوابع كفتة.", img: TEMP_IMG },
                 { id: 't4', name: "صينية واحد كفتة", price: 275, desc: "ربع فراخ + 4 صوابع كفتة + سيخ شيش + نص كيلو أرز + 4 لقمة + سلطة وطحينة وكانز.", img: TEMP_IMG },
-                { id: 't5', name: "صينية العيلة", price: 530, desc: "8 لقمة + نص كيلو أرز + 2 سلطة و2 طحينة كبيرة + نص فراخ + 8 صوابع كفتة + 4 حواوشي.", img: TEMP_IMG },
+                { id: 't5', name: "صينية العيلة", price: 530, desc: "8 لقمة + نص كيلو أرز + 2 سلطة و2 طحينة كبيرة + نص فراخ + 8 صوابع كفتة + 4 حواوشي.", img: "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=800&q=80" },
                 { id: 't6', name: "صينية السلطان", price: 450, desc: "نص فراخ + نص كيلو كفتة + 400 جرام أرز + 2 طحينة ومخلل + 6 رغيف عيش.", img: TEMP_IMG },
                 { id: 't7', name: "صينية الملوك", price: 720, desc: "كيلو كفتة + 8 قطع شيش + 4 حواوشي + 400 جرام أرز + 4 طحينة ومخلل + 10 رغيف.", img: TEMP_IMG },
                 { id: 't8', name: "صينية الكرم", price: 575, desc: "نص فراخ + نص كفتة + 9 قطع شيش + 400 جرام أرز + 2 طحينة ومخلل + 6 رغيف عيش.", img: TEMP_IMG }
@@ -608,19 +608,34 @@
             }
         }
 
-        function sendOrder() {
-            let msg = "*أهلاً مطعم واحد كوفتا، أوردر جديد:* 🔥\n\n";
+function sendOrder() {
+            // 1. تجميع الرسالة في مصفوفة (Array) لضمان الحفاظ على الأسطر الجديدة
+            let lines = [];
+            lines.push("*أهلاً مطعم واحد كوفتا، أوردر جديد:* 🔥");
+            lines.push(""); // سطر فارغ
+
             let total = 0;
-            cart.forEach(i => {
-                msg += `🍔 *${i.name}* -- العدد: [ ${i.qty} ]\n`;
-                total += i.price * i.qty;
+            cart.forEach(item => {
+                lines.push(`🍔 *${item.name}* -- العدد: [ ${item.qty} ]`);
+                total += item.price * item.qty;
             });
-            msg += `\n───────────────\n`;
-            msg += `💰 الحساب (بدون توصيل): *${total} جنيه*`;
-            msg += `\n\nفي انتظار التأكيد، شكراً. 🙏`;
-            
-            // قم بتغيير رقم الواتساب هنا (مع كود الدولة 20)
-            window.open(`https://wa.me/201018161234?text=${encodeURIComponent(msg)}`, '_blank');
+
+            lines.push(""); // سطر فارغ
+            lines.push("───────────────");
+            lines.push(`💰 الحساب (بدون توصيل): *${total} جنيه*`);
+            lines.push(""); // سطر فارغ
+            lines.push("في انتظار التأكيد، شكراً. 🙏");
+
+            // 2. دمج الأسطر وتشفيرها بصيغة يفهمها واتساب بدون أخطاء
+            let finalMessage = lines.join('\n');
+            let encodedMessage = encodeURIComponent(finalMessage);
+
+            // 3. استخدام رابط API واتساب الرسمي (أكثر استقراراً من wa.me)
+            let whatsappNumber = "201018161234"; // ضع رقمك هنا
+            let whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
+
+            // فتح الواتساب
+            window.open(whatsappUrl, '_blank');
         }
 
         function switchTab(tabId) {
